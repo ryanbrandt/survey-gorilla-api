@@ -1,30 +1,27 @@
 import { Knex } from "knex";
 
-import { PG_UUID } from "../constants";
-
 export async function up(knex: Knex): Promise<void> {
   return knex.transaction((trx) => {
-    return trx.schema.createTable("answers", (table) => {
-      table.uuid("id").primary().defaultTo(knex.raw(PG_UUID));
+    return trx.schema.createTable("survey_answers", (table) => {
       table
-        .uuid("question_id")
+        .uuid("survey_id")
         .references("id")
-        .inTable("questions")
+        .inTable("surveys")
         .onDelete("cascade");
 
       table
-        .uuid("user_id")
+        .uuid("answer_id")
         .references("id")
-        .inTable("users")
+        .inTable("answers")
         .onDelete("cascade");
 
-      table.jsonb("values").notNullable();
+      table.primary(["survey_id", "answer_id"]);
     });
   });
 }
 
 export async function down(knex: Knex): Promise<void> {
   return knex.transaction((trx) => {
-    return trx.schema.dropTable("answers");
+    return trx.schema.dropTable("survey_answers");
   });
 }

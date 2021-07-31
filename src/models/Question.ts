@@ -6,14 +6,19 @@ import {
   RelationMapping,
 } from "objection";
 
+import Answer from "./Answer";
 import Survey from "./Survey";
+import User from "./User";
 
 class Question extends Model {
   id!: string;
-  surveyId!: string;
   title!: string;
   componentSchemaId!: string;
   componentConfiguration!: string;
+
+  owner?: User;
+  surveys?: Survey[];
+  answers?: Answer[];
 
   static columnNameMappers = snakeCaseMappers();
 
@@ -24,16 +29,8 @@ class Question extends Model {
   static get jsonSchema(): JSONSchema {
     return {
       type: "object",
-      required: [
-        "id",
-        "surveyId",
-        "title",
-        "componentSchemaId",
-        "componentConfiguration",
-      ],
+      required: ["title", "componentSchemaId", "componentConfiguration"],
       properties: {
-        id: { type: "string" },
-        surveyId: { type: "string" },
         title: { type: "string", maxLength: 255 },
         componentSchemaId: { type: "string", maxLength: 50 },
         componentConfiguration: { type: "object" },
@@ -43,14 +40,38 @@ class Question extends Model {
 
   static get relationMappings(): RelationMappings {
     return {
-      survey: {
-        relation: Model.HasOneRelation,
+      surveys: {
+        relation: Model.HasManyRelation,
         modelClass: Survey,
         join: {
-          from: "surveyId",
+          from: "id",
+          through: {
+            from: "survey_questions.question_id",
+            to: "survey_questions.survey_id",
+          },
           to: "surveys.id",
         },
       } as RelationMapping<Survey>,
+      owner: {
+        relation: Model.HasOneRelation,
+        modelClass: User,
+        join: {
+          from: "questions.id",
+          through: {
+            from: "question_owners.question_id",
+            to: "question_owners.user_id",
+          },
+          to: "users.id",
+        },
+      } as RelationMapping<User>,
+      answers: {
+        relation: Model.HasManyRelation,
+        modelClass: Answer,
+        join: {
+          from: "questions.id",
+          to: "answers.question_id",
+        },
+      } as RelationMapping<Question>,
     };
   }
 }

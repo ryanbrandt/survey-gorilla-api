@@ -7,53 +7,53 @@ import {
 } from "objection";
 
 import Survey from "./Survey";
-import User from "./User";
+import Question from "./Question";
 
-class SurveyOwner extends Model {
+class SurveyQuestion extends Model {
   surveyId!: string;
-  userId!: string;
+  questionId!: string;
 
   static columnNameMappers = snakeCaseMappers();
 
   static get tableName(): string {
-    return "survey_owners";
+    return "survey_questions";
   }
 
   static get jsonSchema(): JSONSchema {
     return {
       type: "object",
-      required: ["surveyId", "userId"],
+      required: ["surveyId", "questionId"],
       properties: {
         surveyId: { type: "string" },
-        userId: { type: "string" },
+        questionId: { type: "string" },
       },
     };
   }
 
   static get idColumn(): Array<string> {
-    return ["survey_id", "user_id"];
+    return ["survey_id", "question_id"];
   }
 
   static get relationMappings(): RelationMappings {
     return {
-      user: {
-        relation: Model.HasOneRelation,
-        modelClass: User,
-        join: {
-          from: "survey_owners.user_id",
-          to: "users.id",
-        },
-      } as RelationMapping<User>,
       survey: {
         relation: Model.HasOneRelation,
         modelClass: Survey,
         join: {
-          from: "survey_owners.survey_id",
+          from: "survey_questions.survey_id",
           to: "surveys.id",
         },
       } as RelationMapping<Survey>,
+      question: {
+        relation: Model.HasOneRelation,
+        modelClass: Question,
+        join: {
+          from: "survey_questions.question_id",
+          to: "questions.id",
+        },
+      } as RelationMapping<Question>,
     };
   }
 }
 
-export default SurveyOwner;
+export default SurveyQuestion;

@@ -6,13 +6,13 @@
   "author": "Ryan Brandt",
   "license": "MIT",
   "scripts": {
-    "start:hot": "nodemon",
+    "start:hot": "nodemon -L",
     "start": "ts-node ./src/index.ts",
     "build": "tsc",
     "knex": "knex --knexfile=src/db/config/knexfile.ts",
-    "db:migrate-up": "yarn knex -- migrate:latest",
-    "db:migrate-down": "yarn knex -- migrate:down",
-    "db:migrate-create": "yarn knex -- migrate:make -x ts"
+    "db:migrate-up": "yarn knex migrate:latest",
+    "db:migrate-down": "yarn knex migrate:down",
+    "db:migrate-create": "yarn knex migrate:make -x ts"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
@@ -29,6 +29,7 @@
     "@types/cors": "^2.8.12",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-validator": "^6.12.1",
     "knex": "^0.95.8",
     "objection": "^2.2.15",
     "pg": "^8.7.1"

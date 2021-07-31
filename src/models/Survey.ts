@@ -5,7 +5,8 @@ import {
   RelationMappings,
   RelationMapping,
 } from "objection";
-import Answer from "./Answer";
+
+import Question from "./Question";
 import User from "./User";
 
 class Survey extends Model {
@@ -15,7 +16,7 @@ class Survey extends Model {
   modified!: Date;
 
   owner?: User;
-  answers?: Answer[];
+  questions?: Question[];
 
   static columnNameMappers = snakeCaseMappers();
 
@@ -30,9 +31,8 @@ class Survey extends Model {
   static get jsonSchema(): JSONSchema {
     return {
       type: "object",
-      required: ["id", "title"],
+      required: ["title"],
       properties: {
-        id: { type: "string" },
         title: { type: "string", maxLength: 255 },
       },
     };
@@ -52,14 +52,18 @@ class Survey extends Model {
           to: "users.id",
         },
       } as RelationMapping<User>,
-      answers: {
+      questions: {
         relation: Model.HasManyRelation,
-        modelClass: Answer,
+        modelClass: Question,
         join: {
           from: "surveys.id",
-          to: "answers.survey_id",
+          through: {
+            from: "survey_questions.survey_id",
+            to: "survey_questions.question_id",
+          },
+          to: "questions.id",
         },
-      } as RelationMapping<Answer>,
+      } as RelationMapping<Question>,
     };
   }
 }
