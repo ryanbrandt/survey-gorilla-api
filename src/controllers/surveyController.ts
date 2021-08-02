@@ -8,11 +8,13 @@ import { getHostUrl } from "../utils/helpers";
 import Question from "../models/Question";
 import SurveyQuestions from "../models/SurveyQuestions";
 import SurveyQuestion from "../models/SurveyQuestions";
-import Answer from "models/Answer";
+import Answer from "../models/Answer";
+import SurveyAnswer from "../models/SurveyAnswer";
 
 interface CreateSurveyBody {
   title: string;
   ownerId: string;
+  questions?: Array<CreateQuestionBody>;
 }
 
 interface CreateQuestionBody {
@@ -21,8 +23,6 @@ interface CreateQuestionBody {
   componentSchemaId: string;
   componentConfiguration: string;
 }
-
-type CreateSurveyQuestionsBody = Array<CreateQuestionBody>;
 
 interface CreateAnswerBody {
   userId: string;
@@ -33,7 +33,7 @@ interface CreateAnswerBody {
 type CreateSurveyAnswerBody = Array<CreateAnswerBody>;
 
 class SurveyController {
-  private async _validateSurveyExists(id: string): Promise<void> {
+  private static async _validateSurveyExists(id: string): Promise<void> {
     const survey = await Survey.query().findById(id);
 
     if (!survey) {
@@ -48,18 +48,35 @@ class SurveyController {
     request: Request<{}, {}, CreateSurveyBody>,
     response: Response
   ): Promise<void> {
-    const { title } = request.body;
+    const { title, questions = [] } = request.body;
 
     const createdSurvey = await Survey.transaction(async () => {
       const survey = await Survey.query().insert({ title });
 
-      // ryan@test.com
-      const ownerId = "9c400e89-ae58-41b7-9428-0281aae7447e";
+      // ryan@test.com, hardcoded for testing
+      const ownerId = "427de2f7-3aed-46a5-9cbf-c871354bed32";
 
       await SurveyOwner.query().insert({
         surveyId: survey.id,
         userId: ownerId,
       });
+
+      if (questions.length > 0) {
+        const insertedQuestions = await Question.query().insert(
+          questions.map((question) => ({
+            title: question.title,
+            componentSchemaId: question.componentSchemaId,
+            componentConfiguration: question.componentConfiguration,
+          }))
+        );
+
+        const surveyQuestions = insertedQuestions.map((insertedQuestion) => ({
+          surveyId: survey.id,
+          questionId: insertedQuestion.id,
+        }));
+
+        await SurveyQuestions.query().insert(surveyQuestions);
+      }
 
       return survey;
     });
@@ -78,53 +95,19 @@ class SurveyController {
       throw new NotFoundError({ message: "Survey not found" });
     }
 
-    response.status(STATUS.OK).json(survey);
-  }
-
-  async createSurveyQuestions(
-    request: Request<{ id: string }, {}, CreateSurveyQuestionsBody>,
-    response: Response
-  ): Promise<void> {
-    const { id } = request.params;
-
-    await this._validateSurveyExists(id);
-
-    await Question.transaction(async () => {
-      const { body: questions } = request;
-      const insertedQuestions = await Question.query().insert(questions);
-
-      const surveyQuestions = insertedQuestions.map((insertedQuestion) => ({
-        surveyId: id,
-        questionId: insertedQuestion.id,
-      }));
-
-      await SurveyQuestions.query().insert(surveyQuestions);
-    });
-
-    response
-      .status(STATUS.CREATED)
-      .send({ url: `${getHostUrl()}/${id}/Question` });
-  }
-
-  async getSurveyQuestions(
-    request: Request,
-    response: Response
-  ): Promise<void> {
-    const { id } = request.params;
-
-    const questions = await Question.transaction(async () => {
+    const questions = await Survey.transaction(async () => {
       const surveyQuestions = await SurveyQuestion.query().where(
         "survey_id",
         id
       );
 
-      return Question.query().whereIn(
+      return await Question.query().whereIn(
         "id",
         surveyQuestions.map((surveyQuestion) => surveyQuestion.questionId)
       );
     });
 
-    response.status(STATUS.OK).json(questions);
+    response.status(STATUS.OK).json({ ...survey, questions });
   }
 
   async createSurveyQuestionAnswers(
@@ -133,15 +116,45 @@ class SurveyController {
   ): Promise<void> {
     const { id } = request.params;
 
-    await this._validateSurveyExists(id);
+    await SurveyController._validateSurveyExists(id);
 
     await Answer.transaction(async () => {
       const answers = request.body;
 
       const insertedAnswers = await Answer.query().insert(answers);
+
+      await SurveyAnswer.query().insert(
+        (insertedAnswers as unknown as Answer[]).map((answer) => ({
+          answerId: answer.id,
+          surveyId: id,
+        }))
+      );
     });
 
     response.status(STATUS.CREATED).send();
+  }
+
+  async getSurveyQuestionAnswers(
+    request: Request,
+    response: Response
+  ): Promise<void> {
+    const { id } = request.params;
+
+    await SurveyController._validateSurveyExists(id);
+
+    const answers = await Survey.transaction(async () => {
+      const surveyAnswers = await SurveyAnswer.query().where("survey_id", id);
+
+      return await Answer.query()
+        .whereIn(
+          "id",
+          surveyAnswers.map((surveyAnswer) => surveyAnswer.answerId)
+        )
+        .withGraphFetched("user")
+        .withGraphFetched("question");
+    });
+
+    response.status(STATUS.CREATED).json(answers);
   }
 }
 

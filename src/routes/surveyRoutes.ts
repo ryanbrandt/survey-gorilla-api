@@ -22,24 +22,17 @@ surveyRoutes.get(
 );
 
 surveyRoutes.post(
-  "/Survey/:id/Question",
-  [],
-  validateRequest,
-  surveyController.createSurveyQuestions
-);
-
-surveyRoutes.get(
-  "/Survey/:id/Question",
-  [],
-  validateRequest,
-  surveyController.getSurveyQuestions
-);
-
-surveyRoutes.post(
   "/Survey/:id/Answer",
   [],
   validateRequest,
   surveyController.createSurveyQuestionAnswers
+);
+
+surveyRoutes.get(
+  "/Survey/:id/Answer",
+  [],
+  validateRequest,
+  surveyController.getSurveyQuestionAnswers
 );
 
 export default surveyRoutes;

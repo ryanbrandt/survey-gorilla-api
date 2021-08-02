@@ -33,7 +33,7 @@ class Question extends Model {
       properties: {
         title: { type: "string", maxLength: 255 },
         componentSchemaId: { type: "string", maxLength: 50 },
-        componentConfiguration: { type: "object" },
+        componentConfiguration: { type: "array" },
       },
     };
   }

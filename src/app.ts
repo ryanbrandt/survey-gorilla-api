@@ -4,6 +4,7 @@ import cors from "cors";
 
 import errorMiddleware from "./middleware/errorMiddleware";
 import surveyRoutes from "./routes/surveyRoutes";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 
@@ -15,6 +16,7 @@ export const applyMiddleware = (app: Express): void => {
 applyMiddleware(app);
 
 app.use(surveyRoutes);
+app.use(userRoutes);
 
 app.use(errorMiddleware);
 

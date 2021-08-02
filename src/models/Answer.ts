@@ -29,9 +29,8 @@ class Answer extends Model {
   static get jsonSchema(): JSONSchema {
     return {
       type: "object",
-      required: ["id", "questionId", "userId", "values"],
+      required: ["questionId", "userId", "values"],
       properties: {
-        id: { type: "string" },
         questionId: { type: "string" },
         userId: { type: "string" },
         values: { type: "object" },
@@ -57,7 +56,7 @@ class Answer extends Model {
         relation: Model.HasOneRelation,
         modelClass: Question,
         join: {
-          from: "answers.qustion_id",
+          from: "answers.question_id",
           to: "questions.id",
         },
       } as RelationMapping<Question>,
