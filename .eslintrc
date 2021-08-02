@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "standard",
+    "plugin:jest/recommended",
+    "plugin:jest/style",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "emcaVersion": 2020,
+    "sourceType": "module"
+  },
+  "plugins": ["jest", "@typescript-eslint/eslint-plugin"]
+}

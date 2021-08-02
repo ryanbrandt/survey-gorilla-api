@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import { json } from "body-parser";
 import cors from "cors";
+import "express-async-errors";
 
 import errorMiddleware from "./middleware/errorMiddleware";
 import surveyRoutes from "./routes/surveyRoutes";

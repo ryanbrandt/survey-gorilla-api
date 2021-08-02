@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { NotFoundError, ValidationError } from "objection";
 
-import Survey from "../models/Survey";
 import { STATUS } from "../utils/types";
-import SurveyOwner from "../models/SurveyOwner";
 import { getHostUrl } from "../utils/helpers";
+import Survey from "../models/Survey";
+import SurveyOwner from "../models/SurveyOwner";
 import Question from "../models/Question";
 import SurveyQuestions from "../models/SurveyQuestions";
 import SurveyQuestion from "../models/SurveyQuestions";

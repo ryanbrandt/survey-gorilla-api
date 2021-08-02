@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 
-import Survey from "../models/Survey";
 import { STATUS } from "../utils/types";
+import Survey from "../models/Survey";
 import SurveyOwner from "../models/SurveyOwner";
-
 import User from "../models/User";
 
 class userController {
