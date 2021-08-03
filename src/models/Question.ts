@@ -7,7 +7,9 @@ import {
 } from "objection";
 
 import Answer from "./Answer";
+import QuestionOwner from "./QuestionOwner";
 import Survey from "./Survey";
+import SurveyQuestion from "./SurveyQuestion";
 import User from "./User";
 
 class Question extends Model {
@@ -44,32 +46,32 @@ class Question extends Model {
         relation: Model.HasManyRelation,
         modelClass: Survey,
         join: {
-          from: "id",
+          from: `${Question.tableName}.id`,
           through: {
-            from: "survey_questions.question_id",
-            to: "survey_questions.survey_id",
+            from: `${SurveyQuestion.tableName}.question_id`,
+            to: `${SurveyQuestion.tableName}.survey_id`,
           },
-          to: "surveys.id",
+          to: `${Survey.tableName}.id`,
         },
       } as RelationMapping<Survey>,
       owner: {
         relation: Model.HasOneRelation,
         modelClass: User,
         join: {
-          from: "questions.id",
+          from: `${Question.tableName}.id`,
           through: {
-            from: "question_owners.question_id",
-            to: "question_owners.user_id",
+            from: `${QuestionOwner.tableName}.question_id`,
+            to: `${QuestionOwner.tableName}.user_id`,
           },
-          to: "users.id",
+          to: `${User.tableName}.id`,
         },
       } as RelationMapping<User>,
       answers: {
         relation: Model.HasManyRelation,
         modelClass: Answer,
         join: {
-          from: "questions.id",
-          to: "answers.question_id",
+          from: `${Question.tableName}.id`,
+          to: `${Answer.tableName}.question_id`,
         },
       } as RelationMapping<Question>,
     };

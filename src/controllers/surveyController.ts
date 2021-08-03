@@ -3,34 +3,17 @@ import { NotFoundError, ValidationError } from "objection";
 
 import { STATUS } from "../utils/types";
 import { getHostUrl } from "../utils/helpers";
+import {
+  CreateSurveyBody,
+  CreateSurveyAnswerBody,
+} from "./types/SurveyRequests";
+
 import Survey from "../models/Survey";
 import SurveyOwner from "../models/SurveyOwner";
 import Question from "../models/Question";
-import SurveyQuestions from "../models/SurveyQuestions";
-import SurveyQuestion from "../models/SurveyQuestions";
+import SurveyQuestion from "../models/SurveyQuestion";
 import Answer from "../models/Answer";
 import SurveyAnswer from "../models/SurveyAnswer";
-
-interface CreateSurveyBody {
-  title: string;
-  ownerId: string;
-  questions?: Array<CreateQuestionBody>;
-}
-
-interface CreateQuestionBody {
-  title: string;
-  ownerId: string;
-  componentSchemaId: string;
-  componentConfiguration: string;
-}
-
-interface CreateAnswerBody {
-  userId: string;
-  questionId: string;
-  values: object;
-}
-
-type CreateSurveyAnswerBody = Array<CreateAnswerBody>;
 
 class SurveyController {
   private static async _validateSurveyExists(id: string): Promise<void> {
@@ -53,12 +36,10 @@ class SurveyController {
     const createdSurvey = await Survey.transaction(async () => {
       const survey = await Survey.query().insert({ title });
 
-      // ryan@test.com, hardcoded for testing
-      const ownerId = "427de2f7-3aed-46a5-9cbf-c871354bed32";
-
       await SurveyOwner.query().insert({
         surveyId: survey.id,
-        userId: ownerId,
+        // ryan@test.com, hardcoded for testing
+        userId: "427de2f7-3aed-46a5-9cbf-c871354bed32",
       });
 
       if (questions.length > 0) {
@@ -75,7 +56,7 @@ class SurveyController {
           questionId: insertedQuestion.id,
         }));
 
-        await SurveyQuestions.query().insert(surveyQuestions);
+        await SurveyQuestion.query().insert(surveyQuestions);
       }
 
       return survey;
@@ -135,7 +116,7 @@ class SurveyController {
   }
 
   async getSurveyQuestionAnswers(
-    request: Request,
+    request: Request<{ id: string }, {}, {}>,
     response: Response
   ): Promise<void> {
     const { id } = request.params;

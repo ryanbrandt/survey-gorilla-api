@@ -6,32 +6,32 @@ import {
   RelationMappings,
 } from "objection";
 
-import Survey from "./Survey";
+import Question from "./Question";
 import User from "./User";
 
-class SurveyOwner extends Model {
-  surveyId!: string;
+class QuestionOwner extends Model {
   userId!: string;
+  questionId!: string;
 
   static columnNameMappers = snakeCaseMappers();
 
   static get tableName(): string {
-    return "survey_owners";
+    return "question_owners";
   }
 
   static get jsonSchema(): JSONSchema {
     return {
       type: "object",
-      required: ["surveyId", "userId"],
+      required: ["userId", "questionId"],
       properties: {
         surveyId: { type: "string" },
-        userId: { type: "string" },
+        questionId: { type: "string" },
       },
     };
   }
 
   static get idColumn(): Array<string> {
-    return ["survey_id", "user_id"];
+    return ["user_id", "question_id"];
   }
 
   static get relationMappings(): RelationMappings {
@@ -40,20 +40,20 @@ class SurveyOwner extends Model {
         relation: Model.HasOneRelation,
         modelClass: User,
         join: {
-          from: `${SurveyOwner.tableName}.user_id`,
+          from: `${QuestionOwner.tableName}.user_id`,
           to: `${User.tableName}.id`,
         },
       } as RelationMapping<User>,
-      survey: {
+      question: {
         relation: Model.HasOneRelation,
-        modelClass: Survey,
+        modelClass: Question,
         join: {
-          from: `${SurveyOwner.tableName}.survey_id`,
-          to: `${Survey.tableName}.id`,
+          from: `${Question.tableName}.question_id`,
+          to: `${Question.tableName}.id`,
         },
-      } as RelationMapping<Survey>,
+      } as RelationMapping<Question>,
     };
   }
 }
 
-export default SurveyOwner;
+export default QuestionOwner;

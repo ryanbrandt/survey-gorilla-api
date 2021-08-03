@@ -1,16 +1,16 @@
 import express from "express";
-import { body } from "express-validator";
+import { param } from "express-validator";
 
 import UserController from "../controllers/userController";
-import validateRequest from "../middleware/validateRequest";
+import requestValidationMiddleware from "../middleware/requestValidationMiddleware";
 
 const userController = new UserController();
 const userRoutes = express.Router();
 
 userRoutes.get(
   "/User/:id/Survey",
-  [],
-  validateRequest,
+  [param("id").isUUID()],
+  requestValidationMiddleware,
   userController.getUserOwnedSurveys
 );
 

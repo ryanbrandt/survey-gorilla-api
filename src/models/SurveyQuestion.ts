@@ -40,16 +40,16 @@ class SurveyQuestion extends Model {
         relation: Model.HasOneRelation,
         modelClass: Survey,
         join: {
-          from: "survey_questions.survey_id",
-          to: "surveys.id",
+          from: `${SurveyQuestion.tableName}.survey_id`,
+          to: `${Survey.tableName}.id`,
         },
       } as RelationMapping<Survey>,
       question: {
         relation: Model.HasOneRelation,
         modelClass: Question,
         join: {
-          from: "survey_questions.question_id",
-          to: "questions.id",
+          from: `${SurveyQuestion.tableName}.question_id`,
+          to: `${Question.tableName}.id`,
         },
       } as RelationMapping<Question>,
     };

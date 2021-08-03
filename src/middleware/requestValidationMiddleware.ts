@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import { ValidationError } from "objection";
 
-const validateRequest = (
+const requestValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -21,4 +21,4 @@ const validateRequest = (
   next();
 };
 
-export default validateRequest;
+export default requestValidationMiddleware;

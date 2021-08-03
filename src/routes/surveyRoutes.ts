@@ -1,37 +1,40 @@
 import express from "express";
-import { body } from "express-validator";
+import { body, oneOf, param } from "express-validator";
 
 import SurveyController from "../controllers/surveyController";
-import validateRequest from "../middleware/validateRequest";
+import requestValidationMiddleware from "../middleware/requestValidationMiddleware";
 
 const surveyController = new SurveyController();
 const surveyRoutes = express.Router();
 
 surveyRoutes.post(
   "/Survey",
-  [],
-  validateRequest,
+  [
+    body("title").isString(),
+    oneOf([body("questions").isArray(), body("questions").isEmpty()]),
+  ],
+  requestValidationMiddleware,
   surveyController.createSurvey
 );
 
 surveyRoutes.get(
   "/Survey/:id",
-  [],
-  validateRequest,
+  [param("id").isUUID()],
+  requestValidationMiddleware,
   surveyController.getSurvey
 );
 
 surveyRoutes.post(
   "/Survey/:id/Answer",
-  [],
-  validateRequest,
+  [param("id").isUUID()],
+  requestValidationMiddleware,
   surveyController.createSurveyQuestionAnswers
 );
 
 surveyRoutes.get(
   "/Survey/:id/Answer",
-  [],
-  validateRequest,
+  [param("id").isUUID()],
+  requestValidationMiddleware,
   surveyController.getSurveyQuestionAnswers
 );
 

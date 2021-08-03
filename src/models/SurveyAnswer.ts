@@ -5,8 +5,8 @@ import {
   RelationMapping,
   RelationMappings,
 } from "objection";
-import Answer from "./Answer";
 
+import Answer from "./Answer";
 import Survey from "./Survey";
 
 class SurveyAnswer extends Model {
@@ -25,7 +25,7 @@ class SurveyAnswer extends Model {
       required: ["surveyId", "answerId"],
       properties: {
         surveyId: { type: "string" },
-        userId: { type: "string" },
+        answerId: { type: "string" },
       },
     };
   }
@@ -36,20 +36,20 @@ class SurveyAnswer extends Model {
 
   static get relationMappings(): RelationMappings {
     return {
-      user: {
+      answer: {
         relation: Model.HasOneRelation,
         modelClass: Answer,
         join: {
-          from: "survey_answers.answer_id",
-          to: "answers.id",
+          from: `${SurveyAnswer.tableName}.user_id`,
+          to: `${Answer.tableName}.id`,
         },
       } as RelationMapping<Answer>,
       survey: {
         relation: Model.HasOneRelation,
         modelClass: Survey,
         join: {
-          from: "survey_answers.survey_id",
-          to: "surveys.id",
+          from: `${SurveyAnswer.tableName}.survey_id`,
+          to: `${Survey.tableName}.id`,
         },
       } as RelationMapping<Survey>,
     };
