@@ -64,7 +64,7 @@ class SurveyController {
 
     response
       .status(STATUS.CREATED)
-      .send({ url: `${getHostUrl()}/Survey/${createdSurvey.id}` });
+      .json({ url: `${getHostUrl()}/Survey/${createdSurvey.id}` });
   }
 
   async getSurvey(request: Request, response: Response): Promise<void> {
@@ -135,7 +135,7 @@ class SurveyController {
         .withGraphFetched("question");
     });
 
-    response.status(STATUS.CREATED).json(answers);
+    response.status(STATUS.OK).json(answers);
   }
 }
 

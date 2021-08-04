@@ -4,6 +4,8 @@ import Question from "../../src/models/Question";
 import Survey from "../../src/models/Survey";
 import User from "../../src/models/User";
 
+jest.mock("knex");
+
 describe("Survey model", () => {
   describe("tableName", () => {
     it("returns the correct table", () => {

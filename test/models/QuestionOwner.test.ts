@@ -11,6 +11,12 @@ describe("QuestionOwner model", () => {
     });
   });
 
+  describe("idColumn", () => {
+    it("returns the composite key", () => {
+      expect(QuestionOwner.idColumn).toEqual(["user_id", "question_id"]);
+    });
+  });
+
   describe("validation", () => {
     it("validates the model when all required attributes are included", () => {
       expect(() =>
