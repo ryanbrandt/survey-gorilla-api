@@ -1,5 +1,7 @@
 # Survey Gorilla API
 
+[![ryanbrandt](https://circleci.com/gh/ryanbrandt/survey-gorilla-api.svg?style=svg)](https://app.circleci.com/pipelines/github/ryanbrandt/survey-gorilla-api)
+
 POC API for a survey service
 
 ## Tech
